@@ -53,3 +53,6 @@ The assistant will acknowledge and go back to sleep mode.
 - Click the reset button to clear conversation history
 - Sessions persist until manually reset or page refresh
 - F.R.I.D.A.Y remembers context within a session
+
+- ![image](https://github.com/user-attachments/assets/60bf7266-79e1-4baa-a229-e5dd78803b83)
+
