@@ -1,0 +1,37 @@
+{
+  "name": "Tony Stark",
+  "contact": {
+    "email": "tony.stark@starkindustries.com",
+    "phone": "+1-555-123-4567"
+  },
+  "timezone": "America/New_York",
+  "language": "en-US",
+  "work": {
+    "company": "Stark Industries",
+    "role": "CEO & CTO",
+    "default_calendar_id": "primary"
+  },
+  "preferences": {
+    "units": {
+      "temperature": "imperial",
+      "distance": "miles"
+    },
+    "greetings": {
+      "morning": "Good morning, Tony! Ready to innovate?",
+      "afternoon": "Good afternoon, Tony! How’s the arc reactor today?",
+      "evening": "Good evening, Tony! Time to unwind?"
+    },
+    "favorite_color": "blue",
+    "ambient_light": "dim",
+    "news_categories": ["technology", "business", "science"],
+    "movie_genres": ["action", "sci-fi", "thriller"],
+    "daily_summary_time": "08:00",
+    "meeting_reminders": true,
+    "wake_word": "Hey Friday"
+  },
+  "hobbies": ["engineering", "philanthropy", "flying with the Iron Man suit"],
+  "social": {
+    "twitter": "@IronMan",
+    "linkedin": "/in/tony-stark"
+  }
+}
