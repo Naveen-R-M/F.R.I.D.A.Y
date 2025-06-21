@@ -3,47 +3,59 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
+    container_name: friday-backend
     ports:
       - "5000:5000"
     volumes:
       - ./logs:/app/logs
     environment:
       - FLASK_ENV=${FLASK_ENV:-development}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-your_key_here}
       - VOICE=${VOICE:-en-US-AriaNeural}
       - PYTHONUNBUFFERED=1
     networks:
       - friday-network
+    restart: on-failure
 
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
+    container_name: friday-frontend
     ports:
       - "8080:80"
     depends_on:
       - backend
     networks:
       - friday-network
+    restart: on-failure
 
   # OCV services
   ocv-backend:
     build:
       context: ./ocv/backend
+      dockerfile: Dockerfile
+    container_name: friday-ocv-backend
     ports:
       - "8000:8000"
     environment:
-      - BASIC_MEM0_API_KEY=${BASIC_MEM0_API_KEY}
-      - BIND_ADDRESS=${OCV_BIND_ADDRESS:-0.0.0.0:8000}
+      - BASIC_MEM0_API_KEY=${BASIC_MEM0_API_KEY:-your_key_here}
+      - BIND_ADDRESS=0.0.0.0:8000
     networks:
       - friday-network
+    restart: on-failure
 
   ocv-frontend:
     build:
       context: ./ocv/frontend
+      dockerfile: Dockerfile
+    container_name: friday-ocv-frontend
     ports:
       - "3000:80"
     networks:
       - friday-network
+    restart: on-failure
 
 networks:
   friday-network:
