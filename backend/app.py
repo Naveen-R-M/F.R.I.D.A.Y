@@ -349,4 +349,4 @@ if __name__ == '__main__':
     if not os.getenv('GEMINI_API_KEY'):
         logger.warning("WARNING: No Gemini API key found! Please add it to .env file")
     
-    socketio.run(app, debug=True, port=5000)
+    socketio.run(app, host='0.0.0.0', debug=True, port=5000)
