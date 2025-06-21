@@ -20,21 +20,40 @@ In this setup:
 
 F.R.I.D.A.Y can request access to user preferences and history stored in OCV, enabling personalized interactions while maintaining user privacy and control.
 
-## Getting Started
+## Getting Started with Docker
 
 ### Prerequisites
 
-- Python 3.10+ for F.R.I.D.A.Y backend
-- Rust 1.75.0+ for OCV backend
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
 - Basic.tech mem0 API key
 
 ### Configuration
 
-1. Configure the mem0 API key in the OCV backend:
+1. Create a `.env` file in the root directory with your Basic.tech mem0 API key:
    ```
-   # In ocv/backend/.env
    BASIC_MEM0_API_KEY=your_api_key_here
    ```
+
+### Running with Docker
+
+```bash
+# Start all services
+docker-compose up
+
+# Run in detached mode
+docker-compose up -d
+
+# Stop all services
+docker-compose down
+```
+
+This will start:
+- F.R.I.D.A.Y backend on port 5000
+- F.R.I.D.A.Y frontend on port 8080
+- OCV backend on port 8000
+- OCV consent management UI on port 3000
+
+## Running Without Docker
 
 ### Running the F.R.I.D.A.Y Backend
 
@@ -44,19 +63,12 @@ pip install -r requirements.txt
 python app.py
 ```
 
-The F.R.I.D.A.Y backend will run at http://localhost:5000
-
 ### Running the F.R.I.D.A.Y Frontend
-
-The frontend is a static web application. You can serve it using any web server:
 
 ```bash
 cd frontend
-# Using Python's built-in HTTP server
 python -m http.server 8080
 ```
-
-The F.R.I.D.A.Y frontend will be available at http://localhost:8080
 
 ### Running the OCV Backend
 
@@ -65,18 +77,19 @@ cd ocv/backend
 cargo run
 ```
 
-The OCV backend will run at http://localhost:8000
-
 ### Running the OCV Consent UI
-
-The consent UI is a static web application:
 
 ```bash
 cd ocv/frontend/public
 python -m http.server 3000
 ```
 
-The OCV Consent UI will be available at http://localhost:3000
+## Accessing Services
+
+- F.R.I.D.A.Y Voice Assistant: http://localhost:8080
+- OCV Consent Management: http://localhost:3000
+
+To access these services from another computer on your network, replace "localhost" with your computer's IP address.
 
 ## Integration Flow
 
