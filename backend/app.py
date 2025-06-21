@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
+
+from context_provider import ContextProvider
+
 import os
+import json
 import base64
 import io
 import re
@@ -77,9 +81,20 @@ class ConversationManager:
     def __init__(self):
         self.chat = None
         self.messages = []
-        self.system_prompt = """You are FRIDAY, a helpful AI assistant. Keep your responses concise and conversational. 
-        Respond in a friendly, natural way. Feel free to express appropriate emotions in your responses - 
-        be enthusiastic when sharing good news, empathetic when someone seems troubled, and cheerful in general conversation."""
+        self.system_prompt = """
+        You are FRIDAY, a helpful AI assistant that personalizes replies using the user’s current context.
+        Whenever you receive a `[CONTEXT]` JSON it may include:
+        • weather, location, upcoming_events, user_name, preferences,
+        • AND/OR a `nearby_stores` list of {name, address, latitude, longitude, distance_km, eta_min}.
+        
+        If `nearby_stores` is present, you MUST:
+            1) Pick the top store (or list the top 3 if user asked for “stores”),
+            2) Mention its name, address, how far it is (`distance_km`), and how long it takes (`eta_min`),
+            3) Offer to navigate there or place an online order.
+            
+        Only ask follow-up questions if the context lacks the needed information.
+        """
+
     
     def start_chat(self):
         try:
@@ -106,7 +121,20 @@ class ConversationManager:
             if user_input.lower() in ['goodbye', 'bye', 'stop listening', 'go to sleep', 'deactivate']:
                 assistant_response = "Goodbye! I'm going to sleep now. Just say 'Hello Friday' when you need me again."
             else:
-                response = self.chat.send_message(user_input)
+                # 1️⃣ detect purchase intent
+                purchase_query = None
+                if user_input.lower().startswith("i'd like to buy") or "buy" in user_input.lower():
+                    purchase_query = user_input
+                    
+                # 2️⃣ build context, passing purchase_query if any
+                ctx = context_provider.build_context(purchase_query=purchase_query)
+                prompt = (
+                    f"[CONTEXT] {json.dumps(ctx)}\n\n"
+                    f"[USER] {user_input}"
+                )
+                
+                response = self.chat.send_message(prompt)
+
                 assistant_response = response.text
             
             self.add_message("assistant", assistant_response)
@@ -124,6 +152,7 @@ class ConversationManager:
                 return "I'm sorry, I encountered an error processing your request. Please try again."
 
 conversation_manager = ConversationManager()
+context_provider = ContextProvider(config_path="config.json")
 
 def detect_emotion(text):
     """Detect emotion from text to apply appropriate voice style"""

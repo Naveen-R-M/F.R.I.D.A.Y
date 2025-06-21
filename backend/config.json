@@ -1,0 +1,19 @@
+{
+  "weather_api_key": "5297b0d63175c8b4391d48eda2fd07fb",
+  "mapbox_api_key": "pk.eyJ1IjoibmF2ZWVuNTUxIiwiYSI6ImNtYzZwejl2OTBjbWIybXBrdDQ0MjVtOXcifQ.VFbEuC2MbKRN8sL7F2ZSfg",
+  "location": {
+    "address": "360 Huntington Avenue, Boston, MA 02115",
+    "latitude": 42.339169,
+    "longitude": -71.088474,
+    "city": "Boston",
+    "timezone": "America/New_York"
+  },
+  "personal_info_path": "personal_info.json",
+  "calendar_credentials_path": "credentials.json",
+  "calendar_token_path": "token.json",
+  "default_preferences": {
+    "units": "imperial",
+    "wake_word": "Hello Friday",
+    "date_format": "MM/DD/YYYY"
+  }
+}
