@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant User
+    participant Friday as Friday Assistant
+    participant OCV as OCV Frontend
+    participant Basic as basic.tech Memory
+    
+    User->>Friday: "Hello Friday"
+    Friday->>Friday: Check if consent exists
+    Friday->>User: Ask for consent to access data
+    User->>Friday: User agrees
+    Friday->>OCV: Redirect to consent page
+    OCV->>Basic: Check existing consent
+    Basic-->>OCV: Return consent status
+    OCV->>User: Display consent agreement
+    User->>OCV: Confirm consent
+    OCV->>Basic: Store consent data
+    Basic-->>OCV: Confirm storage
+    User->>OCV: Click "go-back"
+    OCV->>Friday: Return to Friday with consent token
+    Friday->>Basic: Verify consent token
+    Basic-->>Friday: Confirm valid consent
+    Friday->>User: "You have a team sync at 3pm"
