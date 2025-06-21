@@ -1,188 +1,103 @@
-# F.R.I.D.A.Y - Voice-Powered AI Assistant
+# F.R.I.D.A.Y with Open Context Vault
 
-A real-time voice conversation web application with client-side speech recognition and AI-powered responses.
-
-## Features
-
-- **Client-Side Speech Recognition**: Real-time speech-to-text in the browser
-- **Live Transcription**: See your words as you speak
-- **AI Responses**: Powered by Google's Gemini Pro (free tier)
-- **Text-to-Speech**: Natural voice responses
-- **Real-time Communication**: WebSocket-based instant messaging
-- **Modern UI**: Glassmorphism design with smooth animations
-- **Conversation Management**: Reset and maintain context
-
-## Technology Stack
-
-- **Frontend**: 
-  - Vanilla JavaScript with Web Speech API
-  - Socket.IO client for real-time communication
-  - Modern CSS with glassmorphism effects
-- **Backend**: 
-  - Flask + Socket.IO
-  - Google Gemini Pro for AI responses
-  - gTTS for text-to-speech conversion
-- **Speech Recognition**: Browser's Web Speech API (no server processing needed!)
-
-## Prerequisites
-
-- Python 3.8 or higher
-- Google Gemini API key (free)
-- Modern web browser (Chrome, Edge, or Safari recommended)
-
-## Setup Instructions
-
-### 1. Get Gemini API Key (Free)
-
-1. Go to https://makersuite.google.com/app/apikey
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy the API key
-
-### 2. Configure the Application
-
-1. Open the `.env` file in the project root
-2. Replace `your_gemini_api_key_here` with your actual Gemini API key
-
-### 3. Install Dependencies
-
-```bash
-# Navigate to project directory
-cd C:\Users\navee\Projects\Hackathon\F.R.I.D.A.Y
-
-# Activate virtual environment
-friday_env\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 4. Run the Backend Server
-
-```bash
-# Navigate to backend directory
-cd backend
-
-# Run the Flask application
-python app.py
-```
-
-You should see:
-```
-Starting Flask application...
-Gemini API configured successfully
-Mode: Client-side speech recognition
- * Running on http://127.0.0.1:5000
-```
-
-### 5. Serve the Frontend
-
-Open a new terminal/command prompt:
-
-```bash
-# Navigate to frontend directory
-cd C:\Users\navee\Projects\Hackathon\F.R.I.D.A.Y\frontend
-
-# Start a simple HTTP server
-python -m http.server 8000
-```
-
-### 6. Access the Application
-
-Open your web browser and go to: http://localhost:8000
-
-## Usage
-
-1. **Allow microphone access** when prompted by your browser
-2. **Press and hold** the microphone button
-3. **Speak clearly** - you'll see your words appear in real-time
-4. **Release the button** to send your message
-5. **Listen** to FRIDAY's response
-6. **Test button** - Click to send a test message
-7. **Reset button** - Clear conversation history
-
-## Browser Compatibility
-
-The Web Speech API is supported in:
-- ✅ Google Chrome (recommended)
-- ✅ Microsoft Edge
-- ✅ Safari
-- ❌ Firefox (limited support)
+This project integrates F.R.I.D.A.Y (a voice assistant) with Open Context Vault (OCV), a secure personal data layer that uses Basic.tech's mem0 for storing user context.
 
 ## Project Structure
 
+- `/backend` - F.R.I.D.A.Y backend (Flask)
+- `/frontend` - F.R.I.D.A.Y frontend
+- `/ocv` - Open Context Vault implementation
+  - `/backend` - OCV backend with mem0 integration
+  - `/frontend` - Consent management UI
+
+## Architecture
+
+In this setup:
+
+1. **F.R.I.D.A.Y** serves as the primary voice interface for users
+2. **OCV** provides a secure data layer for storing user context
+3. **mem0** is used as the underlying memory storage
+
+F.R.I.D.A.Y can request access to user preferences and history stored in OCV, enabling personalized interactions while maintaining user privacy and control.
+
+## Getting Started with Docker
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+- Basic.tech mem0 API key
+
+### Configuration
+
+1. Create a `.env` file in the root directory with your Basic.tech mem0 API key:
+   ```
+   BASIC_MEM0_API_KEY=your_api_key_here
+   ```
+
+### Running with Docker
+
+```bash
+# Start all services
+docker-compose up
+
+# Run in detached mode
+docker-compose up -d
+
+# Stop all services
+docker-compose down
 ```
-F.R.I.D.A.Y/
-├── backend/
-│   └── app.py              # Simplified Flask backend
-├── frontend/
-│   ├── index.html          # Main UI
-│   ├── styles.css          # Glassmorphism styling
-│   └── script.js           # Client-side speech recognition
-├── friday_env/             # Python virtual environment
-├── logs/                   # Application logs
-├── requirements.txt        # Minimal Python dependencies
-├── .env                    # API key configuration
-├── .gitignore             # Git ignore file
-└── README.md              # This file
+
+This will start:
+- F.R.I.D.A.Y backend on port 5000
+- F.R.I.D.A.Y frontend on port 8080
+- OCV backend on port 8000
+- OCV consent management UI on port 3000
+
+## Running Without Docker
+
+### Running the F.R.I.D.A.Y Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+python app.py
 ```
 
-## What Changed?
+### Running the F.R.I.D.A.Y Frontend
 
-### Previous Architecture:
-- Audio recorded in browser → Sent to server → FFmpeg conversion → Speech recognition → AI response
+```bash
+cd frontend
+python -m http.server 8080
+```
 
-### New Architecture:
-- Speech recognition in browser → Text sent to server → AI response → Much faster!
+### Running the OCV Backend
 
-### Benefits:
-- **5x faster** response time
-- **No audio dependencies** (removed FFmpeg, PyDub, SpeechRecognition)
-- **Smaller payload** (text vs audio files)
-- **Real-time transcription** feedback
-- **Simpler deployment** (fewer dependencies)
+```bash
+cd ocv/backend
+cargo run
+```
 
-## API Endpoints
+### Running the OCV Consent UI
 
-### WebSocket Events
-- `text_message`: Send text to get AI response
-- `response`: Receive AI response with audio
+```bash
+cd ocv/frontend/public
+python -m http.server 3000
+```
 
-### REST Endpoints
-- `GET /`: Health check
-- `GET /api/health`: Detailed status
-- `POST /api/chat`: Text-based chat
-- `POST /api/text-to-speech`: Convert text to audio
-- `POST /api/reset-conversation`: Clear conversation history
+## Accessing Services
 
-## Troubleshooting
+- F.R.I.D.A.Y Voice Assistant: http://localhost:8080
+- OCV Consent Management: http://localhost:3000
 
-### "Speech recognition not supported"
-- Use Chrome, Edge, or Safari
-- Ensure you're using HTTPS or localhost
+To access these services from another computer on your network, replace "localhost" with your computer's IP address.
 
-### "Microphone access denied"
-- Check browser permissions
-- Allow microphone access for localhost
+## Integration Flow
 
-### No response from AI
-- Verify Gemini API key in `.env`
-- Check backend console for errors
+1. User speaks to F.R.I.D.A.Y through the web interface
+2. F.R.I.D.A.Y backend processes the speech and identifies the intent
+3. If needed, F.R.I.D.A.Y requests access to user context from OCV
+4. OCV validates the access permission and provides the requested data
+5. F.R.I.D.A.Y uses the context to provide personalized responses
+6. Any new context generated during the interaction can be stored back in OCV
 
-### Can't hear audio response
-- Check system volume
-- Verify browser autoplay settings
-
-## Security Notes
-
-- Never commit `.env` file with API keys
-- API keys are kept server-side only
-- All communication over WebSockets
-
-## Future Enhancements
-
-- Multi-language support
-- Voice selection for responses
-- Conversation export
-- Custom wake words
-- Mobile app version
+This architecture gives users control over their data while allowing F.R.I.D.A.Y to maintain context across different sessions.

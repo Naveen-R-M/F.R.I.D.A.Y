@@ -1,0 +1,50 @@
+services:
+  # F.R.I.D.A.Y services
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-development}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - VOICE=${VOICE:-en-US-AriaNeural}
+      - PYTHONUNBUFFERED=1
+    networks:
+      - friday-network
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - friday-network
+
+  # OCV services
+  ocv-backend:
+    build:
+      context: ./ocv/backend
+    ports:
+      - "8000:8000"
+    environment:
+      - BASIC_MEM0_API_KEY=${BASIC_MEM0_API_KEY}
+      - BIND_ADDRESS=${OCV_BIND_ADDRESS:-0.0.0.0:8000}
+    networks:
+      - friday-network
+
+  ocv-frontend:
+    build:
+      context: ./ocv/frontend
+    ports:
+      - "3000:80"
+    networks:
+      - friday-network
+
+networks:
+  friday-network:
+    driver: bridge

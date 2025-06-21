@@ -6,9 +6,97 @@
     <title>F.R.I.D.A.Y - AI Voice Assistant</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="ocv-consent.js"></script>
+    <style>
+        .consent-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .consent-card {
+            background-color: #1a1a2e;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .consent-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #e6e6e6;
+        }
+        
+        .consent-description {
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+        
+        .consent-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .consent-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .consent-btn-primary {
+            background-color: #4361ee;
+            color: white;
+        }
+        
+        .consent-btn-primary:hover {
+            background-color: #3a56d4;
+        }
+        
+        .consent-btn-secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #e6e6e6;
+        }
+        
+        .consent-btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
+    <div id="consentOverlay" class="consent-overlay">
+        <div class="consent-card">
+            <h2 class="consent-title">Data Privacy Consent</h2>
+            <p class="consent-description">
+                F.R.I.D.A.Y would like to remember your preferences and conversation history to provide a personalized experience. Your data will be stored securely in Open Context Vault.
+            </p>
+            <p class="consent-description">
+                You'll have complete control over your data and can revoke access at any time through the OCV Consent Management interface.
+            </p>
+            <div class="consent-buttons">
+                <button id="consentDeny" class="consent-btn consent-btn-secondary">Continue without Saving</button>
+                <button id="consentGrant" class="consent-btn consent-btn-primary">Grant Access</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" style="display: none;">
         <!-- Animated background -->
         <div class="animated-bg">
             <div class="gradient-orb orb-1"></div>
@@ -72,9 +160,55 @@
                     <div class="status-indicator"></div>
                 </div>
             </div>
+
+            <div id="ocvStatusBadge" class="ocv-status" style="position: fixed; bottom: 10px; right: 10px; padding: 5px 10px; border-radius: 5px; font-size: 12px; display: none;">
+                OCV Connected
+            </div>
         </div>
     </div>
     
+    <script>
+        // Initialize consent flow
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if returning from consent page
+            const consentCallback = OCVConsentManager.checkConsentCallback();
+            
+            if (consentCallback === true) {
+                // Consent was granted, show the app
+                document.querySelector('.app-container').style.display = 'flex';
+                document.getElementById('consentOverlay').style.display = 'none';
+                document.getElementById('ocvStatusBadge').style.display = 'block';
+                document.getElementById('ocvStatusBadge').style.backgroundColor = '#4CAF50';
+                document.getElementById('ocvStatusBadge').style.color = 'white';
+            } else if (consentCallback === false) {
+                // Consent was denied, show the app anyway but without OCV
+                document.querySelector('.app-container').style.display = 'flex';
+                document.getElementById('consentOverlay').style.display = 'none';
+            } else {
+                // Check if we already have consent
+                const hasConsent = OCVConsentManager.init();
+                
+                if (hasConsent) {
+                    // Already have consent, show the app
+                    document.querySelector('.app-container').style.display = 'flex';
+                    document.getElementById('consentOverlay').style.display = 'none';
+                    document.getElementById('ocvStatusBadge').style.display = 'block';
+                    document.getElementById('ocvStatusBadge').style.backgroundColor = '#4CAF50';
+                    document.getElementById('ocvStatusBadge').style.color = 'white';
+                } else {
+                    // Show consent overlay
+                    document.getElementById('consentGrant').addEventListener('click', function() {
+                        OCVConsentManager.requestConsent();
+                    });
+                    
+                    document.getElementById('consentDeny').addEventListener('click', function() {
+                        document.querySelector('.app-container').style.display = 'flex';
+                        document.getElementById('consentOverlay').style.display = 'none';
+                    });
+                }
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

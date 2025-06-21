@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCV - Grant Access</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 550px;
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #3957b7;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: #3957b7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .info-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .permission-item svg {
+            color: #3957b7;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+        }
+
+        button.primary {
+            background-color: #3957b7;
+            color: white;
+        }
+
+        button.secondary {
+            background-color: #e5e7eb;
+            color: #444;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: #e1e7ff;
+            color: #3957b7;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .app-info {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">OCV</div>
+            <h1>Grant Access</h1>
+        </div>
+        
+        <div id="app-details">
+            <p class="app-info">
+                <strong id="client-name">F.R.I.D.A.Y</strong> 
+                is requesting access to your personal data
+            </p>
+        </div>
+
+        <div class="info-card">
+            <h3>Permissions Requested</h3>
+            
+            <div class="permission-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <div>
+                    <strong>Read your preferences</strong>
+                    <div>Access your stored preferences for personalization</div>
+                </div>
+            </div>
+            
+            <div class="permission-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                </svg>
+                <div>
+                    <strong>Store new context</strong>
+                    <div>Save information from your conversations</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-card">
+            <h3>Data Categories</h3>
+            <p>
+                <span class="badge">preferences</span>
+                <span class="badge">conversation-history</span>
+            </p>
+        </div>
+        
+        <div class="buttons">
+            <button class="secondary" id="deny-button">Deny</button>
+            <button class="primary" id="approve-button">Allow Access</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Parse query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const requestId = urlParams.get('requestId');
+            const clientId = urlParams.get('clientId');
+            const userId = urlParams.get('userId');
+            const redirectUrl = urlParams.get('redirectUrl');
+            
+            // Update client name if available
+            if (clientId) {
+                const clientName = clientId.split('-').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+                document.getElementById('client-name').textContent = clientName;
+            }
+            
+            // Set up button actions
+            document.getElementById('approve-button').addEventListener('click', function() {
+                // In a real implementation, you would make an API call to OCV backend
+                // to register this consent grant. For now, we'll just redirect.
+                window.location.href = `${redirectUrl}?requestId=${requestId}&granted=true`;
+            });
+            
+            document.getElementById('deny-button').addEventListener('click', function() {
+                window.location.href = `${redirectUrl}?requestId=${requestId}&granted=false`;
+            });
+        });
+    </script>
+</body>
+</html>

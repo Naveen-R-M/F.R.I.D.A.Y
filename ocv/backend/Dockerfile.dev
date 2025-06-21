@@ -1,0 +1,45 @@
+FROM rust:1.75-slim as builder
+
+WORKDIR /app
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y pkg-config libssl-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy manifests
+COPY Cargo.toml Cargo.lock ./
+
+# Cache dependencies
+RUN mkdir -p src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build && \
+    rm -rf src
+
+# Copy source code
+COPY . .
+
+# Build
+RUN cargo build
+
+# Development runtime
+FROM rust:1.75-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y libssl-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the binary
+COPY --from=builder /app/target/debug/ocv /usr/local/bin/ocv
+
+# Set environment variables
+ENV RUST_LOG=info
+
+# Expose port
+EXPOSE 8000
+
+# Run the binary
+CMD ["ocv"]

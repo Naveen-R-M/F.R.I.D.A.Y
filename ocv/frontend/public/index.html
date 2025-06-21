@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Context Vault</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #3957b7;
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: #e1e7ff;
+            color: #3957b7;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            background-color: #3957b7;
+            color: white;
+        }
+
+        button.danger {
+            background-color: #dc3545;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-right: 10px;
+        }
+
+        .nav-tab.active {
+            border-bottom-color: #3957b7;
+            color: #3957b7;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        #redirectButton {
+            background-color: #3957b7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Open Context Vault</h1>
+        
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="permissions">Active Permissions</div>
+            <div class="nav-tab" data-tab="audit">Audit Log</div>
+        </div>
+        
+        <div id="permissionsTab" class="tab-content active">
+            <div id="permissionsList">
+                <!-- Default empty state -->
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z"></path>
+                        <path d="M2 17L12 22L22 17"></path>
+                        <path d="M2 12L12 17L22 12"></path>
+                    </svg>
+                    <p>No active permissions</p>
+                    <p>Applications that you grant access to will appear here.</p>
+                </div>
+                
+                <!-- Example permission (will be shown if a grant exists) -->
+                <div class="card" id="fridayPermission" style="display: none;">
+                    <div class="card-header">
+                        <h3>F.R.I.D.A.Y</h3>
+                        <button class="danger" id="revokeButton">Revoke</button>
+                    </div>
+                    <div>
+                        <span class="badge">preferences</span>
+                        <span class="badge">conversation-history</span>
+                    </div>
+                    <div class="timestamp">Granted: <span id="grantTime">June 21, 2025</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="auditTab" class="tab-content">
+            <div id="auditList">
+                <!-- Default empty state -->
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 11.5V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7.5"></path>
+                        <path d="M16 2v4"></path>
+                        <path d="M8 2v4"></path>
+                        <path d="M3 10h18"></path>
+                        <circle cx="18" cy="18" r="3"></circle>
+                        <path d="M18 14v1"></path>
+                        <path d="M18 21v.01"></path>
+                    </svg>
+                    <p>No audit logs</p>
+                    <p>Data access events will be recorded here.</p>
+                </div>
+                
+                <!-- Example audit logs (will be added dynamically) -->
+            </div>
+        </div>
+        
+        <button id="redirectButton">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+            Back to F.R.I.D.A.Y
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigation
+            const tabs = document.querySelectorAll('.nav-tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs and contents
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}Tab`).classList.add('active');
+                });
+            });
+            
+            // Check if we have a consent token in localStorage
+            const consentToken = localStorage.getItem('ocvConsentToken');
+            if (consentToken) {
+                // Show the F.R.I.D.A.Y permission card
+                document.getElementById('fridayPermission').style.display = 'block';
+                document.querySelector('.empty-state').style.display = 'none';
+                
+                // Update the grant time
+                const grantDate = new Date(parseInt(consentToken.split('-')[2]));
+                document.getElementById('grantTime').textContent = grantDate.toLocaleString();
+            }
+            
+            // Handle revoke button
+            document.getElementById('revokeButton').addEventListener('click', function() {
+                // Remove consent token
+                localStorage.removeItem('ocvConsentToken');
+                
+                // Hide permission card and show empty state
+                document.getElementById('fridayPermission').style.display = 'none';
+                document.querySelector('.empty-state').style.display = 'block';
+                
+                alert('Access for F.R.I.D.A.Y has been revoked.');
+            });
+            
+            // Handle redirect button
+            document.getElementById('redirectButton').addEventListener('click', function() {
+                window.location.href = 'http://localhost:8080';
+            });
+            
+            // Handle consent requests
+            if (window.location.pathname.includes('consent')) {
+                // Redirect to consent page
+                window.location.href = '/consent.html' + window.location.search;
+            }
+        });
+    </script>
+</body>
+</html>
